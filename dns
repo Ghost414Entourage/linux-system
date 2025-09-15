@@ -97,4 +97,7 @@ Query one of those authoritative servers for the A record
 nslookup -type=a youtube.com ns1.google.com
 → finally gives you the IP address.
 
+nslookup -query=any www.youtube.com ns2.google.com.
 
+
+You asked Google’s authoritative server (ns2.google.com) to return all record types it is willing to provide for www.youtube.com.

@@ -1,0 +1,100 @@
+sudo log stream --info --predicate 'process == "mDNSResponder"'
+
+log show --predicate 'process == "mDNSResponder"' --info --last 1m
+
+
+
+sudo killall -HUP mDNSResponder
+
+
+sudo killall -INFO mDNSResponder
+
+
+
+
+
+
+sudo dns-sd -O
+
+
+
+
+
+
+
+
+nslookup -query=ns com. 198.41.0.4
+
+
+nslookup -query=ns youtube.com. 192.41.162.30
+
+
+nslookup -query=a youtube.com. ns1.google.com
+
+
+Root server (.)  →  TLD server (.com)  →  Authoritative server (google.com)  →  Final IP
+
+
+
+
+
+nslookup -query=ns com. 198.41.0.4
+
+
+
+You are asking the root server (198.41.0.4 = a.root-servers.net) for the nameservers of the .com TLD.
+Root replies with the list of .com TLD servers (a.gtld-servers.net through m.gtld-servers.net) plus their IPs (glue records).
+
+You asked a root server (198.41.0.4 = a.root-servers.net) for the NS records of .com.
+📜 What the output means
+Can't find com.: No answer
+This just means the root server doesn’t have an A record for .com itself (which makes sense — TLDs aren’t real hosts).
+Authoritative answers can be found from:
+This is the delegation step.
+The root server is telling you: “I don’t know the IP for .com, but here are the servers that are authoritative for .com.”
+
+
+
+nslookup -query=a l.gtld-servers.net 198.41.0.4
+
+
+
+You’re asking the root server (198.41.0.4) for the A record of l.gtld-servers.net.
+Root servers don’t normally store A records for TLD servers like l.gtld-servers.net.
+That’s why you see:
+*** Can't find l.gtld-servers.net: No answer
+
+When you asked for NS com., the root server did include glue records:
+l.gtld-servers.net   internet address = 192.41.162.30
+That’s how recursive resolvers learn the IP of l.gtld-servers.net without having to do another lookup.
+So the glue record is the actual answer you need — you don’t need to query the root server for the A record of l.gtld-servers.net.
+
+
+nslookup -query=ns youtube.com 192.41.162.30
+
+You asked the .com TLD server (l.gtld-servers.net, IP 192.41.162.30) for the NS records of youtube.com.
+
+
+nslookup -type=a youtube.com ns2.google.com. 
+
+nslookup -query=a youtube.com 216.239.32.10
+
+
+That will return the actual IPv4 addresses for youtube.com
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Step-by-step (like how recursive resolvers do):
+Query root server for .com NS
+nslookup -type=ns com. 198.41.0.4
+→ returns list of .com TLD servers (l.gtld-servers.net etc.)
+Query .com TLD server for NS of youtube.com
+nslookup -type=ns youtube.com l.gtld-servers.net
+→ returns authoritative servers for youtube.com (usually Google’s name servers).
+Query one of those authoritative servers for the A record
+nslookup -type=a youtube.com ns1.google.com
+→ finally gives you the IP address.
+
+

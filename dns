@@ -99,5 +99,10 @@ nslookup -type=a youtube.com ns1.google.com
 
 nslookup -query=any www.youtube.com ns2.google.com.
 
-
 You asked Google’s authoritative server (ns2.google.com) to return all record types it is willing to provide for www.youtube.com.
+
+
+
+
+
+https://www.youtube.com/watch?v=Ah7fYex6Ups&list=LL&index=35
